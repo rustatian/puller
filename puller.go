@@ -12,7 +12,7 @@ import (
 func main() {
 	fs := flag.NewFlagSet("dockerMegaUtility", flag.ExitOnError)
 
-	nrun := fs.Bool("run", true, "run all containers")
+	nrun := fs.Bool("run", false, "run all containers")
 	nstop := fs.Bool("stop", true, "stop all containers")
 	ndelete := fs.Bool("delete", true, "delete all containers")
 

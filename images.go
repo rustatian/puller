@@ -22,15 +22,17 @@ func rabbit(ctx context.Context, cli *client.Client, wg *sync.WaitGroup) {
 
 	io.Copy(devNull(0), r)
 	fmt.Println("Image rabbitmq pulling done")
-
-	bindings := map[nat.Port][]nat.PortBinding{}
-	bindings["5672/tcp"] = []nat.PortBinding{{HostPort: "5672", HostIP: ":"}}
-	bindings["15672/tcp"] = []nat.PortBinding{{HostPort: "15672", HostIP: ":"}}
-
+	
 	resp, err := cli.ContainerCreate(ctx, &container.Config{Hostname: "my-rabbit",
 		Image: "rabbitmq:3.7.8-management",
 		Tty:   true,
-	}, &container.HostConfig{RestartPolicy: container.RestartPolicy{Name: "always",}, PortBindings: bindings,}, &network.NetworkingConfig{}, "rabbit")
+	}, &container.HostConfig{
+		RestartPolicy: container.RestartPolicy{Name: "always",},
+		PortBindings: map[nat.Port][]nat.PortBinding{
+			"5672/tcp": []nat.PortBinding{nat.PortBinding{HostIP:":", HostPort:"5672"}},
+			"15672/tcp": []nat.PortBinding{nat.PortBinding{HostIP:":", HostPort:"15672"}},},},
+		&network.NetworkingConfig{},
+		"rabbit")
 	if err != nil {
 		panic(err)
 	}
@@ -60,13 +62,15 @@ func zipkin(ctx context.Context, cli *client.Client, wg *sync.WaitGroup) {
 	io.Copy(devNull(0), r)
 	fmt.Println("Image zipkin pulling done")
 
-	bindings := map[nat.Port][]nat.PortBinding{}
-	bindings["9411/tcp"] = []nat.PortBinding{{HostPort: "9411", HostIP: ":"}}
-
 	resp, err := cli.ContainerCreate(ctx, &container.Config{Hostname: "zipkin",
 		Image: "openzipkin/zipkin:latest",
 		Tty:   true,
-	}, &container.HostConfig{RestartPolicy: container.RestartPolicy{Name: "always",}, PortBindings: bindings,}, &network.NetworkingConfig{}, "zipkin")
+	}, &container.HostConfig{
+		RestartPolicy: container.RestartPolicy{Name: "always",},
+		PortBindings: map[nat.Port][]nat.PortBinding{
+		"9411/tcp": []nat.PortBinding{nat.PortBinding{HostIP:":", HostPort:"9411"}},},},
+		&network.NetworkingConfig{},
+		"zipkin")
 	if err != nil {
 		panic(err)
 	}
@@ -95,14 +99,16 @@ func consul(ctx context.Context, cli *client.Client, wg *sync.WaitGroup) {
 	io.Copy(devNull(0), r)
 	fmt.Println("Image consul pulling done")
 
-	bindings := map[nat.Port][]nat.PortBinding{}
-	bindings["8500/tcp"] = []nat.PortBinding{{HostPort: "8500", HostIP: ":"}}
-
 	resp, err := cli.ContainerCreate(ctx, &container.Config{Hostname: "consul",
 		Image: "consul:latest",
 		Cmd:   []string{"agent", "-dev", "-client=0.0.0.0",},
 		Tty:   true,
-	}, &container.HostConfig{RestartPolicy: container.RestartPolicy{Name: "always",}, PortBindings: bindings,}, &network.NetworkingConfig{}, "consul")
+	}, &container.HostConfig{
+		RestartPolicy: container.RestartPolicy{Name: "always",},
+		PortBindings: map[nat.Port][]nat.PortBinding{
+			"8500/tcp": []nat.PortBinding{nat.PortBinding{HostIP:":", HostPort:"8500"}},},},
+		&network.NetworkingConfig{},
+		"consul")
 	if err != nil {
 		panic(err)
 	}
@@ -133,14 +139,16 @@ func postgresql(ctx context.Context, cli *client.Client, wg *sync.WaitGroup) {
 	io.Copy(devNull(0), r)
 	fmt.Println("Image postgresql pulling done")
 
-	bindings := map[nat.Port][]nat.PortBinding{}
-	bindings["5432/tcp"] = []nat.PortBinding{{HostPort: "5432", HostIP: ":"}}
-
 	resp, err := cli.ContainerCreate(ctx, &container.Config{Hostname: "postgres",
 		Image: "postgres:latest",
 		Tty:   true,
 		Env:   []string{"POSTGRES_PASSWORD=1"},
-	}, &container.HostConfig{RestartPolicy: container.RestartPolicy{Name: "always",}, PortBindings: bindings,}, &network.NetworkingConfig{}, "postgres")
+	}, &container.HostConfig{
+		RestartPolicy: container.RestartPolicy{Name: "always",},
+		PortBindings: map[nat.Port][]nat.PortBinding{
+			"5432/tcp": []nat.PortBinding{nat.PortBinding{HostIP:":", HostPort:"5432"}},},},
+		&network.NetworkingConfig{},
+		"postgres")
 	if err != nil {
 		panic(err)
 	}
@@ -171,15 +179,17 @@ func elastic(ctx context.Context, cli *client.Client, wg *sync.WaitGroup) {
 
 	fmt.Println("Image elasticsearch pulling done")
 
-	bindings := map[nat.Port][]nat.PortBinding{}
-	bindings["9200/tcp"] = []nat.PortBinding{{HostPort: "9200", HostIP: ":"}}
-	bindings["9300/tcp"] = []nat.PortBinding{{HostPort: "9300", HostIP: ":"}}
-
 	resp, err := cli.ContainerCreate(ctx, &container.Config{Hostname: "elastic",
 		Image: "elasticsearch:6.5.4",
 		Tty:   true,
 		Env:   []string{"discovery.type=single-node"},
-	}, &container.HostConfig{RestartPolicy: container.RestartPolicy{Name: "always",}, PortBindings: bindings,}, &network.NetworkingConfig{}, "es")
+	}, &container.HostConfig{
+		RestartPolicy: container.RestartPolicy{Name: "always",},
+		PortBindings: map[nat.Port][]nat.PortBinding{
+			"9200/tcp": []nat.PortBinding{nat.PortBinding{HostIP:":", HostPort:"9200"}},
+			"9300/tcp": []nat.PortBinding{nat.PortBinding{HostIP:":", HostPort:"9300"}},},},
+		&network.NetworkingConfig{},
+		"es")
 	if err != nil {
 		panic(err)
 	}
