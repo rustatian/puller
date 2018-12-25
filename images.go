@@ -22,7 +22,7 @@ func rabbit(ctx context.Context, cli *client.Client, wg *sync.WaitGroup) {
 
 	io.Copy(devNull(0), r)
 	fmt.Println("Image rabbitmq pulling done")
-	
+
 	resp, err := cli.ContainerCreate(ctx, &container.Config{Hostname: "my-rabbit",
 		Image: "rabbitmq:3.7.8-management",
 		Tty:   true,
