@@ -13,8 +13,8 @@ func main() {
 	fs := flag.NewFlagSet("dockerMegaUtility", flag.ExitOnError)
 
 	nrun := fs.Bool("run", false, "run all containers")
-	nstop := fs.Bool("stop", true, "stop all containers")
-	ndelete := fs.Bool("delete", true, "delete all containers")
+	nstop := fs.Bool("stop", false, "stop all containers")
+	ndelete := fs.Bool("delete", false, "delete all containers")
 
 	err := fs.Parse(os.Args[1:])
 	if err != nil {
